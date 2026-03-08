@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="hero">
+  <div class="hero__left">
+    <div class="chip">Upload & Predict</div>
+
+    <h1 class="h1">
+      Upload Rice Image for <span class="accent">Prediction</span>
+    </h1>
+
+    <p class="sub">
+      Select or drag & drop an image. The model will predict:
+      <b>Raw</b>, <b>Semi-cooked</b>, or <b>Fully cooked</b>.
+    </p>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat__num">ResNet50</div>
+        <div class="stat__label">Backbone</div>
+      </div>
+      <div class="stat">
+        <div class="stat__num">3</div>
+        <div class="stat__label">Classes</div>
+      </div>
+      <div class="stat">
+        <div class="stat__num">Softmax</div>
+        <div class="stat__label">Confidence</div>
+      </div>
+    </div>
+
+    <!-- ✅ Back to landing page (index.html) -->
+    <a class="btn ghost" style="margin-top:14px;" href="{{ url_for('home') }}">
+      ← Back to Home
+    </a>
+  </div>
+
+  <div class="hero__right">
+    <div class="card glass lift">
+      <h2 class="h2">Upload Image</h2>
+      <p class="muted">Supported formats: JPG, PNG, WEBP</p>
+
+      <!-- Server-side error (Flask) -->
+      {% if error %}
+        <div class="alert" id="serverAlert">{{ error }}</div>
+      {% endif %}
+
+      <!-- Client-side error -->
+      <div class="alert" id="clientAlert" style="display:none;"></div>
+
+      <form class="form" action="{{ url_for('predict') }}" method="POST" enctype="multipart/form-data">
+        <label class="drop" id="dropZone" for="imageInput" aria-label="Upload image by click or drag and drop">
+          <input id="imageInput" type="file" name="image" accept="image/*" required>
+
+          <div class="drop__icon">⬆</div>
+
+          <div class="drop__text">
+            <div class="drop__title">Click to select an image</div>
+            <div class="drop__sub">or drag & drop here</div>
+          </div>
+        </label>
+
+        <div class="preview" id="previewBox" title="Click preview to remove and choose again">
+          <img id="previewImg" alt="Preview"/>
+          <div class="preview__meta">
+            <span id="fileName">No file selected</span>
+            <span id="fileInfo" class="muted" style="margin-left:10px;"></span>
+          </div>
+        </div>
+
+        <button class="btn primary" type="submit" id="submitBtn" disabled>
+          Predict Now
+          <span class="btn__arrow">→</span>
+        </button>
+      </form>
+
+      <div class="tip">
+        Tip: For best results, capture a clear, focused image with decent lighting.
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const input = document.getElementById("imageInput");
+  const dropZone = document.getElementById("dropZone");
+
+  const previewBox = document.getElementById("previewBox");
+  const previewImg = document.getElementById("previewImg");
+  const fileName = document.getElementById("fileName");
+  const fileInfo = document.getElementById("fileInfo");
+
+  const submitBtn = document.getElementById("submitBtn");
+
+  const clientAlert = document.getElementById("clientAlert");
+  const serverAlert = document.getElementById("serverAlert");
+
+  const MAX_MB = 8;
+
+  function showClientError(msg) {
+    if (serverAlert) serverAlert.style.display = "none";
+    clientAlert.textContent = msg;
+    clientAlert.style.display = "block";
+  }
+
+  function clearClientError() {
+    clientAlert.style.display = "none";
+    clientAlert.textContent = "";
+  }
+
+  function bytesToMB(bytes) {
+    return (bytes / (1024 * 1024)).toFixed(2);
+  }
+
+  function resetPreview() {
+    previewImg.src = "";
+    previewBox.classList.remove("show");
+    fileName.textContent = "No file selected";
+    fileInfo.textContent = "";
+    submitBtn.disabled = true;
+    input.value = "";
+  }
+
+  function isImageFile(file) {
+    return file && file.type && file.type.startsWith("image/");
+  }
+
+  function handleFile(file) {
+    clearClientError();
+    if (!file) return;
+
+    if (!isImageFile(file)) {
+      resetPreview();
+      showClientError("Please upload a valid image file (JPG, PNG, WEBP).");
+      return;
+    }
+
+    const sizeMB = parseFloat(bytesToMB(file.size));
+    if (sizeMB > MAX_MB) {
+      resetPreview();
+      showClientError(`File is too large (${sizeMB} MB). Please upload an image under ${MAX_MB} MB.`);
+      return;
+    }
+
+    fileName.textContent = file.name;
+    fileInfo.textContent = `(${file.type || "image"} • ${sizeMB} MB)`;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      previewImg.src = e.target.result;
+      previewBox.classList.add("show");
+      submitBtn.disabled = false;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // Normal file select
+  input.addEventListener("change", () => {
+    const file = input.files && input.files[0];
+    handleFile(file);
+  });
+
+  // Drag enter/over
+  ["dragenter", "dragover"].forEach(evt => {
+    dropZone.addEventListener(evt, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropZone.classList.add("dragover");
+    });
+  });
+
+  // Drag leave/drop
+  ["dragleave", "drop"].forEach(evt => {
+    dropZone.addEventListener(evt, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropZone.classList.remove("dragover");
+    });
+  });
+
+  // Drop file
+  dropZone.addEventListener("drop", (e) => {
+    const file = e.dataTransfer.files && e.dataTransfer.files[0];
+    if (!file) return;
+
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    input.files = dt.files;
+
+    handleFile(file);
+  });
+
+  // Click preview to reset
+  previewBox.addEventListener("click", () => {
+    resetPreview();
+    clearClientError();
+  });
+
+  // If there is a server-side error, keep submit disabled until user selects again
+  if (serverAlert) {
+    submitBtn.disabled = true;
+  }
+</script>
+
+{% endblock %}

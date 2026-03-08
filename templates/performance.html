@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="simple">
+  <div class="card glass lift">
+
+    <div class="chip">Model Evaluation</div>
+    <h1 class="h1">Performance <span class="accent">Dashboard</span></h1>
+    <p class="text">
+      Below are the confusion matrix and training curves (accuracy/loss) for each trained model.
+      These plots help verify generalization and identify overfitting.
+    </p>
+
+    <!-- ================= RESNET50 ================= -->
+    <div class="mini" style="margin-top:14px;">
+      <h2 class="h2">ResNet50</h2>
+      <p class="muted">Confusion matrix + training curves</p>
+
+      <div class="grid3" style="margin-top:10px;">
+        <div class="mini">
+          <h3 class="h3">Confusion Matrix</h3>
+          <div class="imgbox">
+            <img src="{{ url_for('static', filename='plots/resnet_cm.png') }}" alt="ResNet50 Confusion Matrix">
+          </div>
+        </div>
+
+        <div class="mini">
+          <h3 class="h3">Accuracy Curve</h3>
+          <div class="imgbox">
+            <img src="{{ url_for('static', filename='plots/resnet_acc.jpeg') }}" alt="ResNet50 Accuracy Curve">
+          </div>
+        </div>
+
+        <div class="mini">
+          <h3 class="h3">Loss Curve</h3>
+          <div class="imgbox">
+            <img src="{{ url_for('static', filename='plots/resnet_loss.jpeg') }}" alt="ResNet50 Loss Curve">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= VGG16 ================= -->
+    <div class="mini" style="margin-top:14px;">
+      <h2 class="h2">VGG16</h2>
+      <p class="muted">Confusion matrix + training curves</p>
+
+      <div class="grid3" style="margin-top:10px;">
+        <div class="mini">
+          <h3 class="h3">Confusion Matrix</h3>
+          <div class="imgbox">
+            <img src="{{ url_for('static', filename='plots/vgg_cm.png') }}" alt="VGG16 Confusion Matrix">
+          </div>
+        </div>
+
+        <div class="mini">
+          <h3 class="h3">Accuracy Curve</h3>
+          <div class="imgbox">
+            <img src="{{ url_for('static', filename='plots/vgg_acc.png') }}" alt="VGG16 Accuracy Curve">
+          </div>
+        </div>
+
+        <div class="mini">
+          <h3 class="h3">Loss Curve</h3>
+          <div class="imgbox">
+            <img src="{{ url_for('static', filename='plots/vgg_loss.png') }}" alt="VGG16 Loss Curve">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= MOBILENETV2 ================= -->
+    <div class="mini" style="margin-top:14px;">
+      <h2 class="h2">MobileNetV2</h2>
+      <p class="muted">Confusion matrix + training curves</p>
+
+      <div class="grid3" style="margin-top:10px;">
+        <div class="mini">
+          <h3 class="h3">Confusion Matrix</h3>
+          <div class="imgbox">
+            <img src="{{ url_for('static', filename='plots/mobilenet_cm.png') }}" alt="MobileNetV2 Confusion Matrix">
+          </div>
+        </div>
+
+        <div class="mini">
+          <h3 class="h3">Accuracy Curve</h3>
+          <div class="imgbox">
+            <img src="{{ url_for('static', filename='plots/mobilenet_acc.jpeg') }}" alt="MobileNetV2 Accuracy Curve">
+          </div>
+        </div>
+
+        <div class="mini">
+          <h3 class="h3">Loss Curve</h3>
+          <div class="imgbox">
+            <img src="{{ url_for('static', filename='plots/mobilenet_loss.jpeg') }}" alt="MobileNetV2 Loss Curve">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
+      <a class="btn ghost" href="{{ url_for('upload') }}">Try Prediction →</a>
+      <a class="btn" href="{{ url_for('about') }}">About →</a>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

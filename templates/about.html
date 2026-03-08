@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="simple">
+  <div class="card glass lift">
+
+    <div class="chip">About the Project</div>
+    <h1 class="h1">Rice Cooking State <span class="accent">Classification</span></h1>
+
+    <p class="sub">
+      An image-based deep learning system that predicts whether rice is
+      <b>Raw</b>, <b>Semi-cooked</b>, or <b>Fully cooked</b> using transfer learning.
+    </p>
+
+    <!-- ===== Quick Stats ===== -->
+    <div class="grid3" style="margin-top:14px;">
+      <div class="mini center">
+        <div class="big">450</div>
+        <div class="muted">Total Images</div>
+      </div>
+      <div class="mini center">
+        <div class="big">3</div>
+        <div class="muted">Classes</div>
+      </div>
+      <div class="mini center">
+        <div class="big">ResNet50</div>
+        <div class="muted">Primary Backbone</div>
+      </div>
+    </div>
+
+    <!-- ===== Problem / Objective / Outcome ===== -->
+    <div class="grid3">
+      <div class="mini">
+        <h3 class="h3">🎯 Problem</h3>
+        <ul class="list">
+          <li>Cooking-stage differences are visually subtle</li>
+          <li>Manual checking is subjective and inconsistent</li>
+          <li>No standard public dataset for rice cooking stages</li>
+        </ul>
+      </div>
+
+      <div class="mini">
+        <h3 class="h3">✅ Objective</h3>
+        <ul class="list">
+          <li>Build an accurate classifier for 3 cooking states</li>
+          <li>Provide confidence score for each prediction</li>
+          <li>Deploy a simple web app for demonstration</li>
+        </ul>
+      </div>
+
+      <div class="mini">
+        <h3 class="h3">🏁 Outcome</h3>
+        <ul class="list">
+          <li>Fast prediction from a single image</li>
+          <li>Supports quality monitoring and automation</li>
+          <li>Extensible to real-time and industrial use</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ===== Method + Tools (overview only) ===== -->
+    <div class="grid2" style="margin-top:14px;">
+      <div class="mini">
+        <h3 class="h3">🧠 Method Overview</h3>
+        <ul class="list">
+          <li>Custom dataset creation (balanced classes)</li>
+          <li>Preprocessing and train/val/test split</li>
+          <li>Transfer learning (frozen base) + fine-tuning (top layers)</li>
+          <li>Evaluation with metrics and visual plots</li>
+        </ul>
+      </div>
+
+      <div class="mini">
+        <h3 class="h3">🧰 Tools & Technology</h3>
+        <ul class="list">
+          <li>Python, TensorFlow / Keras</li>
+          <li>ResNet50, VGG16, MobileNetV2 (trained models)</li>
+          <li>OpenCV for preprocessing</li>
+          <li>Flask for local deployment</li>
+          <li>HTML/CSS/JS for UI</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ===== Buttons ===== -->
+    <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
+      <a class="btn primary" href="{{ url_for('upload') }}" style="max-width:240px;">Try Prediction →</a>
+      <a class="btn ghost" href="{{ url_for('know_more') }}">Know More →</a>
+      <a class="btn" href="{{ url_for('performance') }}">Performance →</a>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

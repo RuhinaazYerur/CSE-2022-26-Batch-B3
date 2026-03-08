@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- ✅ TOP CLEAN SUMMARY (replaces dash-cards) -->
+<div class="top-stats">
+
+  <div class="top-stat">
+    <div class="top-label">Predicted</div>
+    <div class="top-value accent">{{ label.replace('_',' ')|title }}</div>
+  </div>
+
+  <div class="top-stat">
+    <div class="top-label">Confidence</div>
+    <div class="top-value">{{ (conf*100)|round(2) }}%</div>
+  </div>
+
+  <div class="top-stat">
+    <div class="top-label">Model</div>
+    <div class="top-value">ResNet50</div>
+  </div>
+
+  <div class="top-stat">
+    <div class="top-label">Classes</div>
+    <div class="top-value">3</div>
+  </div>
+
+</div>
+
+<section class="result">
+  <div class="card glass lift result__card">
+
+    <div class="result__top">
+      <div>
+        <div class="chip">Prediction Result</div>
+
+        <h2 class="h2" style="margin-top:10px;">
+          Detected State:
+          <span class="accent">{{ label.replace('_',' ')|title }}</span>
+        </h2>
+
+        <p class="muted" style="margin-top:6px;">
+          Confidence: <b>{{ (conf*100)|round(2) }}%</b>
+        </p>
+      </div>
+
+      <a class="btn ghost" href="{{ url_for('upload') }}">Try Another</a>
+    </div>
+
+    <div class="bar">
+      <div class="bar__fill" style="width: {{ (conf*100)|round(0) }}%"></div>
+    </div>
+
+    <div class="result__grid">
+      <div class="imgbox">
+        <img src="{{ image_url }}" alt="Uploaded image">
+      </div>
+
+      <div class="panel">
+        <h3 class="h3">AI Insight</h3>
+        <p class="muted" style="line-height:1.6;">
+          The model determines the cooking state by learning rice texture patterns,
+          moisture reflection, and surface structure changes across raw, semi-cooked,
+          and fully cooked stages.
+        </p>
+
+        <div style="height:12px;"></div>
+
+        <h3 class="h3">Class Probabilities</h3>
+
+        {% if prob_map %}
+          <div class="probs">
+            {% for k, v in prob_map.items() %}
+              <div class="prob">
+                <div class="prob__row">
+                  <span class="prob__name">{{ k.replace('_',' ')|title }}</span>
+                  <span class="prob__val">{{ (v*100)|round(2) }}%</span>
+                </div>
+                <div class="prob__bar">
+                  <div class="prob__barFill" style="width: {{ (v*100)|round(0) }}%"></div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="muted">Probabilities not available.</p>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="simple">
+  <div class="card glass lift">
+
+    <div class="chip">Know More</div>
+    <h1 class="h1">Project <span class="accent">Deep Dive</span></h1>
+
+    <p class="sub">
+      A detailed view of the dataset, pipeline workflow, evaluation methods,
+      limitations, and future scope of the system.
+    </p>
+
+    <!-- ===== Dataset Details ===== -->
+    <div class="grid3" style="margin-top:14px;">
+      <div class="mini center">
+        <div class="big">450</div>
+        <div class="muted">Total Images</div>
+      </div>
+      <div class="mini center">
+        <div class="big">150</div>
+        <div class="muted">Per Class</div>
+      </div>
+      <div class="mini center">
+        <div class="big">3</div>
+        <div class="muted">Classes</div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="mini">
+        <h3 class="h3">📸 Dataset Composition</h3>
+        <ul class="list">
+          <li><b>Raw:</b> 150 images</li>
+          <li><b>Semi-cooked:</b> 150 images</li>
+          <li><b>Fully cooked:</b> 150 images</li>
+          <li>Captured under controlled conditions</li>
+          <li>Balanced dataset for fair learning</li>
+        </ul>
+        <div class="note">
+          The dataset was self-created due to the lack of publicly available rice cooking-stage datasets.
+        </div>
+      </div>
+
+      <div class="mini">
+        <h3 class="h3">🧪 Training Strategy</h3>
+        <ul class="list">
+          <li>Train/Validation/Test split applied</li>
+          <li>Data augmentation for robustness</li>
+          <li>Transfer learning using pre-trained CNN backbones</li>
+          <li>Fine-tuning top layers to improve accuracy</li>
+        </ul>
+        <div class="note">
+          Fine-tuning improves sensitivity to subtle texture and moisture differences across stages.
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== How it works (only here) ===== -->
+    <div class="mini" style="margin-top:14px;">
+      <h3 class="h3">⚙️ How It Works (Pipeline)</h3>
+
+      <div class="grid3" style="margin-top:10px;">
+        <div class="mini center">
+          <div class="big">1</div>
+          <div class="muted">Upload Image</div>
+        </div>
+        <div class="mini center">
+          <div class="big">2</div>
+          <div class="muted">Preprocess</div>
+        </div>
+        <div class="mini center">
+          <div class="big">3</div>
+          <div class="muted">Predict + Confidence</div>
+        </div>
+      </div>
+
+      <div class="note">
+        The system preprocesses the uploaded image, extracts features using the CNN backbone, and predicts
+        one of the three cooking states with a confidence score.
+      </div>
+    </div>
+
+    <!-- ===== Evaluation ===== -->
+    <div class="grid2" style="margin-top:14px;">
+      <div class="mini">
+        <h3 class="h3">📊 Evaluation Metrics</h3>
+        <ul class="list">
+          <li>Accuracy</li>
+          <li>Precision, Recall, F1-score</li>
+          <li>Confusion Matrix</li>
+          <li>Accuracy/Loss training curves</li>
+        </ul>
+      </div>
+
+      <div class="mini">
+        <h3 class="h3">🧠 Common Misclassifications</h3>
+        <ul class="list">
+          <li>Semi-cooked vs Fully cooked may look similar</li>
+          <li>Lighting variation can change texture appearance</li>
+          <li>New rice types may require more training data</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ===== Future Scope ===== -->
+    <div class="mini" style="margin-top:14px;">
+      <h3 class="h3">🚀 Future Scope</h3>
+
+      <div class="grid3" style="margin-top:10px;">
+        <div class="mini">
+          <h3 class="h3">📸 More Diverse Dataset</h3>
+          <div class="muted">Different angles, rice varieties, and backgrounds.</div>
+        </div>
+        <!--<div class="mini">
+          <h3 class="h3">🔁 Cross Validation</h3>
+          <div class="muted">Stronger evidence of stability for publication-level results.</div>
+        </div>-->
+        <div class="mini">
+          <h3 class="h3">📡 Real-time / IoT</h3>
+          <div class="muted">Camera integration and edge deployment for monitoring.</div>
+        </div>
+      </div>
+
+      <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
+        <a class="btn primary" href="{{ url_for('upload') }}" style="max-width:260px;">Try Prediction →</a>
+        <a class="btn ghost" href="{{ url_for('performance') }}">View Performance →</a>
+        <a class="btn" href="{{ url_for('about') }}">Back to About →</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

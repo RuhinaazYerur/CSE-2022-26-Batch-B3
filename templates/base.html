@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{{ title if title else "Rice Classification" }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <div class="bg"></div>
+  <div class="overlay"></div>
+
+  <header class="nav">
+    <div class="nav__inner">
+      <a class="brand" href="{{ url_for('home') }}">
+        <span class="brand__dot"></span>
+        <span class="brand__text">Rice Cooking State</span>
+      </a>
+
+      <nav class="links">
+        <a href="{{ url_for('home') }}" class="link">Home</a>
+        <a href="{{ url_for('about') }}" class="link">About</a>
+        <a href="{{ url_for('performance') }}" class="link">Performance</a>
+        <a class="link" href="{{ url_for('know_more') }}">Know More</a>
+      </nav>
+    </div>
+    <!--<div class="announcement">
+  <div class="announcement__track">
+    🚀 Model Accuracy: 99% | 📊 ResNet50 Best Performing Model | 🔬 AI-Based Rice Classification System
+  </div>
+</div>-->
+
+  </header>
+
+  <main class="page">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <div class="footer__inner">
+      <span>© {{ 2026 }} Rice Classification Project</span>
+      <span class="footer__sep">•</span>
+      <span>ResNet50 + Transfer Learning</span>
+    </div>
+  </footer>
+</body>
+</html>
