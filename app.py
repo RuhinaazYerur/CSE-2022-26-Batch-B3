@@ -15,9 +15,11 @@ MODEL_PATH = "resnet_rice_model.h5"
 IMG_SIZE = (224, 224)
 CLASS_NAMES = ["fully_cooked", "raw", "semi_cooked"]
 ALLOWED_EXT = {".jpg", ".jpeg", ".png", ".webp"}
+MAX_UPLOAD_FILES = 10
 
 model = None
 tf = None
+
 
 def init_tf():
     global tf
@@ -30,6 +32,7 @@ def init_tf():
         tf = tensorflow_lib
     return tf
 
+
 def get_model():
     global model
     if model is None:
@@ -37,9 +40,30 @@ def get_model():
         model = tensorflow_lib.keras.models.load_model(MODEL_PATH, compile=False)
     return model
 
+
 def allowed_file(filename: str) -> bool:
     ext = os.path.splitext(filename.lower())[1]
     return ext in ALLOWED_EXT
+
+
+def cleanup_uploads(folder_path: str, keep_latest: int = 20):
+    try:
+        files = []
+        for name in os.listdir(folder_path):
+            path = os.path.join(folder_path, name)
+            if os.path.isfile(path):
+                files.append((path, os.path.getmtime(path)))
+
+        files.sort(key=lambda x: x[1], reverse=True)
+
+        for old_path, _ in files[keep_latest:]:
+            try:
+                os.remove(old_path)
+            except Exception:
+                pass
+    except Exception:
+        pass
+
 
 def predict_image(file_path: str):
     tensorflow_lib = init_tf()
@@ -63,33 +87,41 @@ def predict_image(file_path: str):
 
     return label, conf, probs
 
+
 @app.route("/", methods=["GET"])
 def home():
     return render_template("index.html", title="Rice Classification")
+
 
 @app.route("/about", methods=["GET"])
 def about():
     return render_template("about.html", title="About")
 
+
 @app.route("/performance", methods=["GET", "POST"])
 def performance():
     return render_template("performance.html", title="Performance")
+
 
 @app.route("/dataset", methods=["GET"])
 def dataset():
     return render_template("dataset.html", title="Dataset")
 
+
 @app.route("/know-more", methods=["GET"])
 def know_more():
     return render_template("know_more.html", title="Know More")
+
 
 @app.route("/team", methods=["GET"])
 def team():
     return render_template("team.html", title="Team")
 
+
 @app.route("/upload", methods=["GET"])
 def upload():
     return render_template("upload.html", title="Upload")
+
 
 @app.route("/predict", methods=["POST"])
 def predict():
@@ -107,7 +139,10 @@ def predict():
         original_name = secure_filename(file.filename)
         unique_name = f"{uuid.uuid4().hex}_{original_name}"
         save_path = os.path.join(app.config["UPLOAD_FOLDER"], unique_name)
+
         file.save(save_path)
+
+        cleanup_uploads(app.config["UPLOAD_FOLDER"], keep_latest=MAX_UPLOAD_FILES)
 
         label, conf, probs = predict_image(save_path)
         prob_map = {CLASS_NAMES[i]: float(probs[i]) for i in range(len(CLASS_NAMES))}
@@ -123,6 +158,7 @@ def predict():
 
     except Exception as e:
         return render_template("index.html", title="Rice Classification", error=f"Prediction failed: {str(e)}")
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)), debug=False)
