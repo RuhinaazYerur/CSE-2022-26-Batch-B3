@@ -26,7 +26,13 @@ CLASS_NAMES = ["fully_cooked", "raw", "semi_cooked"]
 # -----------------------------
 # Load model once
 # -----------------------------
-model = tf.keras.models.load_model(MODEL_PATH,compile=False)
+model = None
+
+def get_model():
+    global model
+    if model is None:
+        model = tf.keras.models.load_model(MODEL_PATH, compile=False)
+    return model
 
 ALLOWED_EXT = {".jpg", ".jpeg", ".png", ".webp"}
 
@@ -35,6 +41,8 @@ def allowed_file(filename: str) -> bool:
     return ext in ALLOWED_EXT
 
 def predict_image(file_path: str):
+    model = get_model()
+
     img = load_img(file_path, target_size=IMG_SIZE)
     arr = img_to_array(img, dtype="float32")
     arr = np.expand_dims(arr, axis=0)
@@ -43,7 +51,7 @@ def predict_image(file_path: str):
 
     probs = model.predict(arr, verbose=0)[0]
 
-    # ✅ FREE MEMORY (important for Render)
+    # free memory
     del arr
     gc.collect()
 
