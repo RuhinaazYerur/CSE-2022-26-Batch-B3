@@ -7,8 +7,6 @@ from werkzeug.utils import secure_filename
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 
 
-
-
 app = Flask(__name__)
 
 # -----------------------------
@@ -37,7 +35,7 @@ def allowed_file(filename: str) -> bool:
 
 def predict_image(file_path: str):
     img = load_img(file_path, target_size=IMG_SIZE)
-    arr = img_to_array(img)
+    arr = img_to_array(img, dtype="float32")
     arr = np.expand_dims(arr, axis=0)
     arr = tf.keras.applications.resnet50.preprocess_input(arr)
 
@@ -77,35 +75,36 @@ def upload():
 
 @app.route("/predict", methods=["POST"])
 def predict():
-    if "image" not in request.files:
-        return render_template("index.html", title="Rice Classification", error="No file selected.")
+    try:
+        if "image" not in request.files:
+            return render_template("index.html", title="Rice Classification", error="No file selected.")
 
-    file = request.files["image"]
-    if file.filename == "":
-        return render_template("index.html", title="Rice Classification", error="Please choose an image.")
+        file = request.files["image"]
+        if file.filename == "":
+            return render_template("index.html", title="Rice Classification", error="Please choose an image.")
 
-    if not allowed_file(file.filename):
-        return render_template("index.html", title="Rice Classification", error="Upload JPG / PNG / WEBP only.")
+        if not allowed_file(file.filename):
+            return render_template("index.html", title="Rice Classification", error="Upload JPG / PNG / WEBP only.")
 
-    original_name = secure_filename(file.filename)
-    unique_name = f"{uuid.uuid4().hex}_{original_name}"
-    save_path = os.path.join(app.config["UPLOAD_FOLDER"], unique_name)
-    file.save(save_path)
+        original_name = secure_filename(file.filename)
+        unique_name = f"{uuid.uuid4().hex}_{original_name}"
+        save_path = os.path.join(app.config["UPLOAD_FOLDER"], unique_name)
+        file.save(save_path)
 
-    label, conf, probs = predict_image(save_path)
+        label, conf, probs = predict_image(save_path)
+        prob_map = {CLASS_NAMES[i]: float(probs[i]) for i in range(len(CLASS_NAMES))}
 
-    # For UI: show confidence bar + show all class probabilities
-    prob_map = {CLASS_NAMES[i]: float(probs[i]) for i in range(len(CLASS_NAMES))}
+        return render_template(
+            "result.html",
+            title="Result",
+            image_url=url_for("static", filename=f"uploads/{unique_name}"),
+            label=label,
+            conf=conf,
+            prob_map=prob_map
+        )
 
-    return render_template(
-        "result.html",
-        title="Result",
-        image_url=url_for("static", filename=f"uploads/{unique_name}"),
-        label=label,
-        conf=conf,
-        prob_map=prob_map
-    )
-
+    except Exception as e:
+        return render_template("index.html", title="Rice Classification", error=f"Prediction failed: {str(e)}")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)), debug=False)
