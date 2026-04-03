@@ -1,4 +1,5 @@
 import os
+import gc
 import uuid
 import numpy as np
 import tensorflow as tf
@@ -37,13 +38,21 @@ def predict_image(file_path: str):
     img = load_img(file_path, target_size=IMG_SIZE)
     arr = img_to_array(img, dtype="float32")
     arr = np.expand_dims(arr, axis=0)
+
     arr = tf.keras.applications.resnet50.preprocess_input(arr)
 
     probs = model.predict(arr, verbose=0)[0]
+    gc.collect()
+    # FREE MEMORY (important for Render)
+    del arr
+    tf.keras.backend.clear_session()
+
     idx = int(np.argmax(probs))
     label = CLASS_NAMES[idx]
     conf = float(probs[idx])
+
     return label, conf, probs
+
 
 @app.route("/", methods=["GET"])
 def home():
