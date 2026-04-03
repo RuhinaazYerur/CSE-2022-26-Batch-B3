@@ -42,10 +42,10 @@ def predict_image(file_path: str):
     arr = tf.keras.applications.resnet50.preprocess_input(arr)
 
     probs = model.predict(arr, verbose=0)[0]
-    gc.collect()
-    # FREE MEMORY (important for Render)
+
+    # ✅ FREE MEMORY (important for Render)
     del arr
-    tf.keras.backend.clear_session()
+    gc.collect()
 
     idx = int(np.argmax(probs))
     label = CLASS_NAMES[idx]
